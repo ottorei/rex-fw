@@ -58,8 +58,8 @@ echo NIC Queues ..
 /sbin/ethtool -L ${lan} combined 8
 
 echo NIC ring buffers ..
-/sbin/ethtool -G ${wan} rx 2048 tx 2048
-/sbin/ethtool -G ${lan} rx 2048 tx 2048
+/sbin/ethtool -G ${wan} rx 4096 tx 4096
+/sbin/ethtool -G ${lan} rx 4096 tx 4096
 
 echo NIC offloads ..
 /sbin/ethtool -K ${wan} tx off rx off gso off tso off gro off lro off
