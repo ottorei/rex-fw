@@ -68,9 +68,9 @@ echo NIC offloads ..
 /sbin/ethtool -A ${lan} tx off rx off autoneg off
 
 # Set IRQ-affinities (Intel provided script)
-echo Changing IRQ-affinities ..
-./set_irq_affinity.sh -x local ${wan}
-./set_irq_affinity.sh -x local ${lan}
+#echo Changing IRQ-affinities ..
+#./set_irq_affinity.sh -x local ${wan}
+#./set_irq_affinity.sh -x local ${lan}
 
 # Set qdiscs for interfaces
 /sbin/tc qdisc del dev ${wan} root
@@ -79,7 +79,8 @@ echo Changing IRQ-affinities ..
 /sbin/tc qdisc add dev ${lan} root cake bandwidth 950Mbit ethernet regional triple-isolate nat
 
 # Start management VPN-tunnel
-/usr/bin/wg-quick up rex-wg
+# /usr/bin/wg-quick up rex-wg
+ifup rex-wg
 
 # Fix this: assign address and up openvswitch bridge
 # TODO: Switch back to basic linux bridge dev
