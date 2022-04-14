@@ -73,13 +73,14 @@ echo NIC offloads ..
 #./set_irq_affinity.sh -x local ${lan}
 
 # Set qdiscs for interfaces
-/sbin/tc qdisc del dev ${wan} root
-/sbin/tc qdisc del dev ${lan} root
-/sbin/tc qdisc add dev ${wan} root cake bandwidth 215Mbit ethernet regional triple-isolate nat
-/sbin/tc qdisc add dev ${lan} root cake bandwidth 950Mbit ethernet regional triple-isolate nat
+#/sbin/tc qdisc del dev ${wan} root
+#/sbin/tc qdisc del dev ${lan} root
+#/sbin/tc qdisc add dev ${wan} root cake bandwidth 215Mbit ethernet regional triple-isolate nat
+#/sbin/tc qdisc add dev ${lan} root cake bandwidth 950Mbit ethernet regional triple-isolate nat
 
 # Start management VPN-tunnel
 # /usr/bin/wg-quick up rex-wg
+ip link del rex-wg
 ifup rex-wg
 
 # Fix this: assign address and up openvswitch bridge
@@ -96,3 +97,7 @@ echo Importing zpool ..
 # Fix this: restart services which are binding before interfaces are up
 echo Restarting services ..
 /bin/systemctl restart isc-dhcp-server nginx mumble-server smbd snmpd
+
+# QoS
+echo Loading QoS-script ..
+./tc_qdisc.sh
