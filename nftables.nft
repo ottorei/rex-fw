@@ -1,5 +1,5 @@
-table ip filter { # handle 48
-	set INTERNET-OUT-DENIED-SERVICES { # handle 5
+table ip filter { # handle 60
+	set INTERNET-OUT-DENIED-SERVICES { # handle 7
 		type inet_proto . inet_service
 		flags constant,interval
 		auto-merge
@@ -21,7 +21,7 @@ table ip filter { # handle 48
 			     6 . 7547 comment "CPE WAN Management Protocol" }
 	}
 
-	set RFC-5735-ADDRESSES { # handle 6
+	set RFC-5735-ADDRESSES { # handle 8
 		type ipv4_addr
 		flags constant,interval
 		auto-merge
@@ -34,7 +34,7 @@ table ip filter { # handle 48
 			     224.0.0.0/4 comment "Multicast, RFC 3171", 240.0.0.0-255.255.255.255 comment "Reserved for Future Use, RFC 1112" }
 	}
 
-	set SERVICE-NFS { # handle 7
+	set SERVICE-NFS { # handle 9
 		type inet_proto . inet_service
 		flags constant
 		elements = { 6 . 2049 comment "NFS data",
@@ -45,20 +45,20 @@ table ip filter { # handle 48
 			     17 . 112 comment "Rpcbind" }
 	}
 
-	set NFS-CLIENTS { # handle 8
+	set NFS-CLIENTS { # handle 10
 		type ipv4_addr
 		flags constant
 		elements = { 10.23.200.3 comment "Jimmy Mediaserver", 10.23.200.25 comment "Areena44 CAM" }
 	}
 
-	set SERVICE-MUMBLE { # handle 9
+	set SERVICE-MUMBLE { # handle 11
 		type inet_proto . inet_service
 		flags constant
 		elements = { 6 . 64738 comment "Mumble data",
 			     17 . 64738 comment "Mumble voice" }
 	}
 
-	set SERVICE-IPERF { # handle 10
+	set SERVICE-IPERF { # handle 12
 		type inet_proto . inet_service
 		flags constant
 		elements = { 6 . 5201 comment "Iperf TCP",
@@ -67,66 +67,76 @@ table ip filter { # handle 48
 
 	chain INPUT { # handle 1
 		type filter hook input priority 0; policy accept;
-		ct state 0x2,0x4 counter packets 166425480 bytes 151269023695 accept comment "Allow established and related connections" # handle 13
-		meta l4proto 1 counter packets 42533 bytes 3491798 accept comment "Allow ICMP" # handle 14
-		iif "lo" accept comment "Allow loopback" # handle 15
-		iifname { "rex-wg", "enp6s0f0", "enp7s0f0", "enp6s0f1", "enp7s0f1.41", "rex-a44-ptp", "rex-sokar-ptp" } tcp dport 22 counter packets 114139 bytes 6803480 accept comment "Local SSH-server" # handle 17
-		iifname { "ovsbr0", "rex-wg", "enp7s0f0", "enp6s0f1", "enp7s0f1", "enp7s0f1.41" } udp dport 53 counter packets 114860 bytes 8242143 accept comment "Local DNS-server" # handle 19
-		iifname { "ovsbr0", "rex-wg", "enp7s0f0", "enp6s0f1", "enp7s0f1", "enp7s0f1.41" } udp dport 123 counter packets 284 bytes 21584 accept comment "Local NTP-server" # handle 21
-		iifname { "enp7s0f0", "enp6s0f1", "enp7s0f1.41" } udp dport 67 counter packets 12125 bytes 4080027 accept comment "Local DHCP-server" # handle 23
-		iifname { "enp6s0f0", "enp6s0f1", "enp7s0f1.41" } udp dport { 1223, 1224, 1225 } counter packets 4453 bytes 784516 accept comment "WireGuard gateways, rex-wg, sokar-rex-ptp, rex-a44-ptp" # handle 26
-		iifname "ovsbr0" udp dport 161 counter packets 605141 bytes 62628751 accept comment "Local SNMP-server" # handle 27
-		iifname { "rex-wg", "enp6s0f0", "enp6s0f1", "enp7s0f1.41", "rex-a44-ptp", "rex-sokar-ptp" } tcp dport { 80, 443 } counter packets 185743 bytes 10019660 accept comment "Local Nginx-server" # handle 30
-		iifname { "rex-wg", "enp6s0f0", "enp6s0f1", "enp7s0f1.41", "rex-a44-ptp", "rex-sokar-ptp" } meta l4proto . th dport @SERVICE-MUMBLE counter packets 25976 bytes 1059987 accept comment "Local Mumble-server" # handle 32
-		iifname { "rex-wg", "enp6s0f1", "rex-a44-ptp", "rex-sokar-ptp" } tcp dport 445 counter packets 152 bytes 7904 accept comment "Local Samba-server" # handle 34
-		iifname { "rex-a44-ptp", "rex-sokar-ptp" } tcp dport 179 counter packets 1 bytes 60 accept comment "Sokar-FW BGP-peering" # handle 36
-		iifname { "rex-a44-ptp", "rex-sokar-ptp" } udp dport { 3784, 3785 } counter packets 0 bytes 0 accept comment "Sokar-FW BFD-peering" # handle 39
-		iifname { "rex-wg", "rex-a44-ptp" } ip saddr @NFS-CLIENTS meta l4proto . th dport @SERVICE-NFS counter packets 77566 bytes 4653960 accept comment "Local NFS-server" # handle 41
-		iifname { "rex-wg", "enp6s0f1", "enp7s0f1.41", "rex-a44-ptp", "rex-sokar-ptp" } meta l4proto . th dport @SERVICE-IPERF counter packets 0 bytes 0 accept comment "Local IPERF-server" # handle 43
-		counter packets 789291 bytes 110621166 drop comment "POLICY DROP INPUT" # handle 44
+		ct state 0x2,0x4 counter packets 136523 bytes 20386077 accept comment "Allow established and related connections" # handle 15
+		meta l4proto 1 counter packets 90 bytes 7128 accept comment "Allow ICMP" # handle 16
+		iif "lo" accept comment "Allow loopback" # handle 17
+		iifname { "rex-wg", "enp6s0f0", "enp7s0f0", "enp6s0f1", "enp7s0f1.41", "rex-a44-ptp", "rex-sokar-ptp" } tcp dport 22 counter packets 232 bytes 13784 accept comment "Local SSH-server" # handle 19
+		iifname { "ovsbr0", "rex-wg", "enp7s0f0", "enp6s0f1", "enp7s0f1", "enp7s0f1.41" } udp dport 53 counter packets 3131 bytes 215816 accept comment "Local DNS-server" # handle 21
+		iifname { "ovsbr0", "rex-wg", "enp7s0f0", "enp6s0f1", "enp7s0f1", "enp7s0f1.41" } udp dport 123 counter packets 1 bytes 76 accept comment "Local NTP-server" # handle 23
+		iifname { "enp7s0f0", "enp6s0f1", "enp7s0f1.41" } udp dport 67 counter packets 22 bytes 7427 accept comment "Local DHCP-server" # handle 25
+		iifname { "enp6s0f0", "enp6s0f1", "enp7s0f1.41" } udp dport { 1223, 1224, 1225 } counter packets 438 bytes 77088 accept comment "WireGuard gateways, rex-wg, sokar-rex-ptp, rex-a44-ptp" # handle 28
+		iifname "ovsbr0" udp dport 161 counter packets 1361 bytes 141203 accept comment "Local SNMP-server" # handle 29
+		iifname { "rex-wg", "enp6s0f0", "enp6s0f1", "enp7s0f1.41", "rex-a44-ptp", "rex-sokar-ptp" } tcp dport { 80, 443 } counter packets 36 bytes 1984 accept comment "Local Nginx-server" # handle 32
+		iifname { "rex-wg", "enp6s0f0", "enp6s0f1", "enp7s0f1.41", "rex-a44-ptp", "rex-sokar-ptp" } meta l4proto . th dport @SERVICE-MUMBLE counter packets 32 bytes 1300 accept comment "Local Mumble-server" # handle 34
+		iifname { "rex-wg", "enp6s0f1", "rex-a44-ptp", "rex-sokar-ptp" } tcp dport 445 counter packets 0 bytes 0 accept comment "Local Samba-server" # handle 36
+		iifname { "rex-a44-ptp", "rex-sokar-ptp" } tcp dport 179 counter packets 0 bytes 0 accept comment "Sokar-FW BGP-peering" # handle 38
+		iifname { "rex-a44-ptp", "rex-sokar-ptp" } udp dport { 3784, 3785 } counter packets 0 bytes 0 accept comment "Sokar-FW BFD-peering" # handle 41
+		iifname { "rex-wg", "rex-a44-ptp" } ip saddr @NFS-CLIENTS meta l4proto . th dport @SERVICE-NFS counter packets 2867 bytes 172020 accept comment "Local NFS-server" # handle 43
+		iifname { "rex-wg", "enp6s0f1", "enp7s0f1.41", "rex-a44-ptp", "rex-sokar-ptp" } meta l4proto . th dport @SERVICE-IPERF counter packets 0 bytes 0 accept comment "Local IPERF-server" # handle 45
+		counter packets 1719 bytes 219608 drop comment "POLICY DROP INPUT" # handle 46
 	}
 
 	chain PREROUTING { # handle 2
 		type filter hook prerouting priority 0; policy accept;
-		ct state 0x1 counter packets 50924 bytes 16022332 drop comment "Drop invalid conntrack states" # handle 11
-		fib saddr . iif oif 0 counter packets 151 bytes 13762 drop comment "Drop packets without reverse path" # handle 12
+		ct state 0x1 counter packets 453 bytes 60569 drop comment "Drop invalid conntrack states" # handle 13
+		fib saddr . iif oif 0 counter packets 0 bytes 0 drop comment "Drop packets without reverse path" # handle 14
 	}
 
 	chain FORWARD { # handle 3
 		type filter hook forward priority 0; policy accept;
-		ct state 0x2,0x4 counter packets 181531954 bytes 121688771723 accept comment "Allow established and related connections" # handle 48
-		oifname "enp6s0f0" ip daddr @RFC-5735-ADDRESSES counter packets 73 bytes 4548 log prefix "FORWARD-DENY: " drop comment "Deny forwarding to private address range" # handle 49
-		oifname "enp6s0f0" meta l4proto . th dport @INTERNET-OUT-DENIED-SERVICES counter packets 888 bytes 116738 log prefix "FORWARD-DENY: " drop comment "Denied Internet-traffic" # handle 50
-		meta l4proto 1 counter packets 2275561 bytes 191122350 accept comment "Allow ICMP" # handle 51
-		iifname { "ovsbr0", "enp7s0f0", "enp6s0f1", "enp7s0f1.41" } oifname "enp6s0f0" counter packets 1512510 bytes 115851904 accept comment "Allowed Internet-traffic" # handle 53
-		iifname "rex-wg" oifname "rex-wg" counter packets 68 bytes 3020 accept comment "REX-ZONE <-> REX-ZONE" # handle 54
-		iifname "rex-wg" oifname "enp6s0f1" ip daddr 10.23.10.10 tcp dport 3389 counter packets 0 bytes 0 accept comment "REX-ZONE -> PC RDP" # handle 55
-		iifname "enp6s0f1" oifname { "ovsbr0", "rex-wg", "rex-a44-ptp" } counter packets 2861 bytes 148772 accept comment "Allow VPN- and VM-services for LAN" # handle 57
-		iifname { "ovsbr0", "rex-wg", "enp6s0f1" } ip daddr 10.44.0.0/16 counter packets 4089549 bytes 375177431 accept comment "Areena44" # handle 59
-		iifname { "rex-wg", "rex-a44-ptp" } oifname "ovsbr0" ip saddr 10.44.99.0/24 ip daddr 10.0.100.7 udp dport 162 counter packets 0 bytes 0 accept comment "Areena44 SW-MGMT" # handle 61
-		iifname "enp7s0f1" oifname "ovsbr0" ip daddr 10.0.100.56 counter packets 289436 bytes 44865036 accept comment "Local WLAN-NET -> UNIFI-Controller" # handle 62
-		counter packets 0 bytes 0 drop comment "POLICY DROP FORWARD" # handle 63
+		ct state 0x2,0x4 counter packets 438236 bytes 245015002 accept comment "Allow established and related connections" # handle 52
+		oifname "enp6s0f0" ip daddr @RFC-5735-ADDRESSES counter packets 0 bytes 0 log prefix "FORWARD-DENY: " drop comment "Deny forwarding to private address range" # handle 53
+		oifname "enp6s0f0" meta l4proto . th dport @INTERNET-OUT-DENIED-SERVICES counter packets 1 bytes 132 log prefix "FORWARD-DENY: " drop comment "Denied Internet-traffic" # handle 54
+		meta l4proto 1 counter packets 5092 bytes 427728 accept comment "Allow ICMP" # handle 55
+		iifname { "ovsbr0", "enp7s0f0", "enp6s0f1", "enp7s0f1.41" } oifname "enp6s0f0" counter packets 5684 bytes 658318 accept comment "Allowed Internet-traffic" # handle 57
+		iifname "rex-wg" oifname "rex-wg" counter packets 0 bytes 0 accept comment "REX-ZONE <-> REX-ZONE" # handle 58
+		iifname "rex-wg" oifname "enp6s0f1" ip daddr 10.23.10.10 tcp dport 3389 counter packets 0 bytes 0 accept comment "REX-ZONE -> PC RDP" # handle 59
+		iifname "enp6s0f1" oifname { "ovsbr0", "rex-wg", "rex-a44-ptp" } counter packets 0 bytes 0 accept comment "Allow VPN- and VM-services for LAN" # handle 61
+		iifname { "ovsbr0", "rex-wg", "enp6s0f1" } ip daddr 10.44.0.0/16 counter packets 9207 bytes 845647 accept comment "Areena44" # handle 63
+		iifname { "rex-wg", "rex-a44-ptp" } oifname "ovsbr0" ip saddr 10.44.99.0/24 ip daddr 10.0.100.7 udp dport 162 counter packets 0 bytes 0 accept comment "Areena44 SW-MGMT" # handle 65
+		iifname "enp7s0f1" oifname "ovsbr0" ip daddr 10.0.100.56 counter packets 518 bytes 61264 accept comment "Local WLAN-NET -> UNIFI-Controller" # handle 66
+		counter packets 0 bytes 0 drop comment "POLICY DROP FORWARD" # handle 67
 	}
 
 	chain OUTPUT { # handle 4
 		type filter hook output priority 0; policy accept;
-		ct state 0x8 oifname "enp6s0f0" ip daddr @RFC-5735-ADDRESSES counter packets 0 bytes 0 log prefix "Internet-out-deny: " drop comment "Deny output to private address range" # handle 45
-		ct state 0x8 oifname "enp6s0f0" meta l4proto . th dport @INTERNET-OUT-DENIED-SERVICES counter packets 0 bytes 0 log prefix "Internet-out-deny: " drop comment "Denied Internet-traffic" # handle 46
-		counter packets 142276977 bytes 89703075988 accept comment "POLICY ACCEPT OUTPUT" # handle 47
+		ct state 0x8 oifname "enp6s0f0" ip daddr @RFC-5735-ADDRESSES counter packets 0 bytes 0 log prefix "Internet-out-deny: " drop comment "Deny output to private address range" # handle 49
+		ct state 0x8 oifname "enp6s0f0" meta l4proto . th dport @INTERNET-OUT-DENIED-SERVICES counter packets 0 bytes 0 log prefix "Internet-out-deny: " drop comment "Denied Internet-traffic" # handle 50
+		counter packets 95719 bytes 649017469 accept comment "POLICY ACCEPT OUTPUT" # handle 51
+	}
+
+	chain IPS_INPUT { # handle 5
+		type filter hook input priority 10; policy accept;
+		iifname { "enp6s0f0", "enp6s0f1", "enp7s0f1.41" } counter packets 135108 bytes 20273494 queue flags bypass,fanout to 1-4 comment "Suricata NFQUEUE" # handle 48
+	}
+
+	chain IPS_FORWARD { # handle 6
+		type filter hook forward priority 10; policy accept;
+		iifname { "enp6s0f0", "enp6s0f1", "enp7s0f1.41" } counter packets 353233 bytes 229416430 queue flags bypass,fanout to 1-4 comment "Suricata NFQUEUE" # handle 69
 	}
 }
-table ip nat { # handle 49
+table ip nat { # handle 61
 	chain PREROUTING { # handle 1
 		type nat hook prerouting priority -100; policy accept;
 	}
 
 	chain POSTROUTING { # handle 2
 		type nat hook postrouting priority 100; policy accept;
-		oifname "enp6s0f0" counter packets 1806030 bytes 145405475 masquerade random,persistent comment "Internet Source NAT" # handle 3
-		oifname "rex-wg" counter packets 4743179 bytes 430074197 masquerade random,persistent comment "VPN Source NAT" # handle 4
+		oifname "enp6s0f0" counter packets 7713 bytes 843605 masquerade random,persistent comment "Internet Source NAT" # handle 3
+		oifname "rex-wg" counter packets 10681 bytes 969463 masquerade random,persistent comment "VPN Source NAT" # handle 4
 	}
 }
-table ip mangle { # handle 50
+table ip mangle { # handle 62
 	chain PREROUTING { # handle 1
 		type filter hook prerouting priority -150; policy accept;
 	}
