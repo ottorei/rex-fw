@@ -2,7 +2,7 @@
 
 wan_iface="enp6s0f0"
 lan_iface="enp6s0f1"
-up=215
+up=530
 down=950
 tc=/sbin/tc
 egress="fq_codel noecn flows 2048 interval 100ms target 5ms"
